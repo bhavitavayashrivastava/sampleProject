@@ -1,0 +1,252 @@
+
+to rectify .profile 
+
+PATH="/bin:/sbin:/usr/local/bin:/usr/bin:/usr/sbin:"
+
+
+New cluster with bs1638ngp@gmail.com
+
+
+ssh -i ~/.ssh/bhavitavaya 34.125.54.115
+
+check java version
+
+java -version
+javac -version
+
+if not installed install java 8 
+
+sudo add-apt-repository ppa:openjdk-r/ppa
+
+sudo apt-get update -y
+
+sudo apt-get install openjdk-8-jdk -y
+
+after java installation check java version
+
+java -version
+javac -version
+
+
+Create password less login 
+
+ls -ltr ~/.ssh
+
+ssh-keygen 
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+ssh localhost  ( check if its connecting to localhost without password )
+
+download hadoop tar ball , hive, spark 
+
+wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.0/hadoop-3.3.0.tar.gz
+
+sudo mv -f hadoop-3.3.0 /opt
+
+sudo chown ${USER}:${USER} -R /opt/hadoop-3.3.0
+
+sudo ln -s /opt/hadoop-3.3.0 /opt/hadoop
+
+
+
+in hadoop-env.sh
+
+add 
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_OS_TYPE=${HADOOP_OS_TYPE:-$(uname -s)}
+
+core-site.xml
+
+<configuration>
+        <property>
+  <name>fs.defaultFS</name>
+  <value>hdfs://localhost:9000</value>
+</property>
+</configuration>
+
+
+hdfs-site.xml
+
+
+<configuration>
+<property>
+                <name>dfs.namenode.name.dir</name>
+                <value>/opt/hadoop/dfs/name</value>
+        </property>
+        <property>
+                <name>dfs.namenode.checkpoint.dir</name>
+                <value>/opt/hadoop/dfs/namesecondary</value>
+        </property>
+        <property>
+                <name>dfs.datanode.data.dir</name>
+                <value>/opt/hadoop/dfs/data</value>
+        </property>
+        <property>
+                <name>dfs.replication</name>
+                <value>1</value>
+        </property>
+        <property>
+                <name>dfs.blocksize</name>
+                <value>33554432</value>
+        </property>
+        <property>
+                <name>dfs.webhdfs.enabled</name>
+                <value>true</value>
+        </property>
+        <property>
+                <name>dfs.client.datanode-restart.timeout</name>
+                <value>30</value>
+        </property>
+</configuration>
+ 
+
+
+ls -ltr /opt/hadoop/dfs
+
+hdfs namenode -format
+
+ls- ltr /opt/hadoop/dfs
+
+
+hdfs dfs -ls /
+
+hdfs dfs -mkdir -p /user/${USER}
+
+set up data from github
+
+git clone https://github.com/dgadiraju/retail_db.git
+
+sudo mkdir -p /data/retail_db
+
+sudo cp -rf retail_db/departments /data/retail_db
+sudo cp -rf retail_db/categories /data/retail_db
+sudo cp -rf retail_db/products /data/retail_db
+sudo cp -rf retail_db/products /data/retail_db
+sudo cp -rf retail_db/products /data/retail_db
+sudo cp -rf retail_db/products /data/retail_db
+
+
+find /data/retail_db
+
+hdfs dfs -mkdir -p /public/retail_db
+
+hdfs dfs -put /data/retail_db/* /public/retail_db
+
+hdfs dfs -find /public/retail_db
+
+SETUP HIVE 
+
+sudo mv -f apache-hive-3.1.2-bin /opt
+
+sudo ln -s /opt/apache-hive-3.1.2-bin /opt/hive
+
+
+
+Will set up hive metastore in postgresql docker 
+
+
+docker create \
+--name cluster_pg \
+-p 5432:5432 \
+-e POSTGRES_PASSWORD=itversity \
+postgres
+
+
+docker start cluster_pg
+
+docker logs -f cluster_pg
+
+
+docker exec \
+-it cluster_pg \
+psql -U postgres
+
+
+postgres=# CREATE DATABASE metastore ;
+postgres=# CREATE USER hive WITH ENCRYPTED PASSWORD 'itversity' ;
+postgres=# GRANT ALL ON DATABASE metastore TO hive ;
+
+sudo apt install postgresql-client -y
+
+
+
+
+psql -h localhost \
+> -p 5432 \
+> -d metastore \
+> -U hive \
+> -W
+
+
+
+
+
+ls -ltr /opt/hive/lib/ | grep postgres
+-rw-r--r-- 1 bhavitavaya bhavitavaya   645268 Sep 26  2018 postgresql-9.4.1208.jre7.jar
+-rw-r--r-- 1 bhavitavaya bhavitavaya     8463 Nov 15  2018 postgresql-metadata-storage-0.12.0.jar
+bhavitavaya@hadoop-demo:~$ vim /opt/hive/conf/hive-site.xml
+bhavitavaya@hadoop-demo:~$ jps
+9325 Jps
+bhavitavaya@hadoop-demo:~$ ls -ltr /opt/hive/lib | grep guava*
+-rw-r--r-- 1 bhavitavaya bhavitavaya  2308517 Sep 26  2018 guava-19.0.jar
+-rw-r--r-- 1 bhavitavaya bhavitavaya   971309 May 20  2019 jersey-guava-2.25.1.jar
+bhavitavaya@hadoop-demo:~$ rm /opt/hive/lib/guava-19.0.jar
+bhavitavaya@hadoop-demo:~$ cp /opt/hadoop/share/hadoop/hdfs/lib/guava-27.0-jre.jar /opt/hive/lib/
+bhavitavaya@hadoop-demo:~$ ls -ltr /opt/hive/lib | grep guava*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
